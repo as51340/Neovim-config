@@ -1,6 +1,7 @@
 local opts = { noremap = true, silent = true }
 
 local term_opts = { silent = true }
+local netrw_opts = { noremap = false }
 
 -- Shorten function name
 local keymap = vim.api.nvim_set_keymap
@@ -9,6 +10,29 @@ local keymap = vim.api.nvim_set_keymap
 keymap("", "<Space>", "<Nop>", opts)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+
+-- File explorer
+vim.g.netrw_keepdir = 0
+vim.g.netrw_winsize = 30
+vim.g.netrw_banner = 0
+keymap("n", "<leader>dd", ":Lexplore %:p:h<CR>", opts) --open file explorer in the current directory of the file
+keymap("n", "<leader>e", ":Lex 30<cr>", opts)
+vim.api.nvim_create_autocmd('filetype', {
+  pattern = 'netrw',
+  desc = 'Better mappings for netrw',
+  callback = function()
+    local bind = function(old, new)
+      keymap('n', new, old, netrw_opts)
+    end
+
+    bind("<C-w>h", "<C-h>")
+    bind("<C-w>j", "<C-j>")
+    bind("<C-w>k", "<C-k>")
+    bind("<C-w>l", "<C-l>")
+  end
+})
+
+
 
 -- Modes
 --   normal_mode = "n",
@@ -25,7 +49,6 @@ keymap("n", "<C-j>", "<C-w>j", opts)
 keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
-keymap("n", "<leader>e", ":Lex 30<cr>", opts)
 
 -- Resize with arrows
 keymap("n", "<C-Up>", ":resize -2<CR>", opts)
@@ -71,6 +94,11 @@ keymap("t", "<C-k>", "<C-\\><C-N><C-w>k", term_opts)
 keymap("t", "<C-l>", "<C-\\><C-N><C-w>l", term_opts)
 
 -- keymap("n", "<leader>f", "<cmd>Telescope find_files<cr>", opts)
-keymap("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
-keymap("n", "<c-t>", "<cmd>Telescope live_grep<cr>", opts)
+local find_command_value = "{ 'rg', '--files', '--hidden', '-g', '!node_modules/**', '-g', '!.git/**', }"
+keymap("n", "<leader>ff", "<cmd>Telescope find_files<cr>", opts)
+-- keymap("n", "<leader>f", "<cmd>lua require'telescope.builtin'.find_files(require('telescope.themes').get_dropdown({ previewer = false }))<cr>", opts)
+-- keymap("n", "<leader>fl", "<cmd>Telescope grep_string<cr>", opts)
+keymap("n", "<leader>fr", "<cmd>Telescope live_grep<cr>", opts)
+keymap("n", "<leader>fb", "<cmd>Telescope buffers<cr>", opts)
+
 
